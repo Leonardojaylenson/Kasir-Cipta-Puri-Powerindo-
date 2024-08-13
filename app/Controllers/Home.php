@@ -402,42 +402,28 @@ private function generateVerificationCode($length = 6)
 }
 
 public function barang(){
-    $model = new M_pb();
-    $data['menus'] = $model->getFilteredMenu();
-    
-    $showForLevel3 = false;
-
-    // Check if any menu has show_for_level_3 == 1
-    foreach ($data['menus'] as $menu) {
-        if ($menu->show_for_level_3 == 1) {
-            $showForLevel3 = true;
-            break;
-        }
-    }
-
-    if (session()->get('level') == 1 || $showForLevel3 == 1) {
-        $this->log_activity('User membuka view barang');
-        
-        // Fetch user-specific data, settings, and barang
-        $where = array('id_user' => session()->get('id'));
-        $data['dua'] = $model->getwhere('user', $where);
-        $where1 = array('barang.delete' => '0');
-        $data['satu'] = $model->tampilWhere('barang', $where1);
-        $where = array('id_setting' => 1);
-        $data['setting'] = $model->getwhere('setting', $where);
-        
-        // Render the views
-        echo view('header', $data);
-        echo view('menu', $data);
-        echo view('barang', $data);
-        echo view('footer');
-    } elseif (session()->get('level') == 2) {
-        return redirect()->to('Home/notfound');
-    } else {
-        return redirect()->to('home/login');
-    }
+	$model = new M_pb();
+	$data['menus'] = $model->getFilteredMenu();
+	if (session()->get('level') == 1 || $data('menus')->show_for_level_3 == 1) {
+	
+	$this->log_activity('User membuka view barang');
+	$where = array('id_user' => session()->get('id'));
+	$data['dua'] = $model->getwhere('user', $where);
+	$where1 = array('barang.delete' => '0');
+	$data['satu'] = $model->tampilWhere('barang',$where1);
+	$where = array('id_setting' => 1);
+	$data['setting'] = $model->getwhere('setting', $where);
+	
+	echo view('header',$data);
+	echo view('menu',$data);
+	echo view('barang',$data);
+	echo view('footer');
+} elseif(session()->get('level') == 2||session()->get('level') == 3) {
+	return redirect()->to('Home/notfound');
+}else{
+	return redirect()->to('home/login');
 }
-
+}
 
 public function tbarang(){
 	if (session()->get('level') == 1) {

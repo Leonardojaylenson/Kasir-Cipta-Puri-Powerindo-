@@ -27,17 +27,20 @@ class M_pb extends Model
     {
         // Fetch all menu items
         $menus = $this->tampil('menus');
-    
-        // Filter menus based on user level
-        if (session()->get('level') == 3) {
+        
+        $userLevel = session()->get('level');
+        
+        if ($userLevel == 3) {
+            // Filter only menus that should be shown for level 3
             $menus = array_filter($menus, function($menu) {
-                return $menu->show_for_level_3;
+                return $menu->show_for_level_3 == 1;
             });
         }
     
         // Build the menu tree from filtered menus
         return $this->buildMenuTree($menus);
     }
+    
     
 
 
